@@ -84,6 +84,20 @@ Register with Claude Code:
 claude mcp add --scope user counsel-mcp -- node "$(pwd)/dist/index.js"
 ```
 
+### Alternative: interactive setup wizard
+
+Instead of the manual steps above, you can run the setup wizard which handles everything interactively:
+
+```bash
+# If you cloned the repo:
+npm run setup
+
+# If you installed via npm:
+counsel-mcp-setup
+```
+
+It walks you through API keys, tests providers, registers with Claude Code, and copies templates to your project — all in one go.
+
 ### Verify it works
 
 Start a **new** Claude Code session (important — existing sessions don't pick up new servers), then try:
@@ -180,6 +194,22 @@ The tools above (`ask_openai`, `ask_gemini`, `ask_all`) are the building blocks.
 ```
 
 You set up the MCP server once. The slash commands are different for every project because every project has different risks, different files to review, and different questions to ask.
+
+### Interactive setup (recommended)
+
+The fastest way to get started — run the setup wizard:
+
+```bash
+# If installed via npm:
+counsel-mcp-setup
+
+# If cloned the repo:
+npm run setup
+```
+
+It handles API keys, provider verification, MCP registration, and copies the generic `/counsel` and `/refine` templates into your project. Takes about 30 seconds.
+
+If you prefer manual setup, see the steps below.
 
 ### Quick start: use the generic templates
 

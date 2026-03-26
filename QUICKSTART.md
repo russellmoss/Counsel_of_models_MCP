@@ -30,7 +30,19 @@ npm install
 npm run build
 ```
 
-## Step 2: Add your API keys
+## Step 2: Run the setup wizard (recommended)
+
+```bash
+# If you cloned the repo:
+npm run setup
+
+# If you installed via npm:
+counsel-mcp-setup
+```
+
+The wizard walks you through everything: API keys, provider testing, Claude Code registration, and project setup. If you prefer manual steps, continue with the steps below.
+
+## Step 3: Add your API keys (manual alternative)
 
 **If you cloned the repo:**
 
@@ -50,7 +62,7 @@ export GEMINI_API_KEY="your-key-here"
 
 > **Tip**: Either `GEMINI_API_KEY` or `GOOGLE_API_KEY` works — set whichever you prefer.
 
-## Step 3: Test that it works
+## Step 4: Test that it works
 
 ```bash
 npm run smoke
@@ -68,7 +80,7 @@ Testing Gemini...
 === Results: 2 passed, 0 failed ===
 ```
 
-## Step 4: Register with Claude Code
+## Step 5: Register with Claude Code
 
 **If you installed via npm:**
 
@@ -90,7 +102,7 @@ claude mcp list
 
 Look for `counsel-mcp` with `✓ Connected`.
 
-## Step 5: Try it out
+## Step 6: Try it out
 
 **Start a new Claude Code session** (this is required — existing sessions don't see newly added servers).
 
@@ -108,7 +120,7 @@ Use ask_gemini to critique this implementation plan.
 Use ask_all to compare both answers about the pros and cons of microservices vs monoliths.
 ```
 
-## Step 6: Set up your first project workflow (optional)
+## Step 7: Set up your first project workflow (optional)
 
 The tools are globally available now. To get the full cross-validation workflow in a specific project:
 

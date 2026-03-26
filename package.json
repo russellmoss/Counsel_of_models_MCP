@@ -5,7 +5,8 @@
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "counsel-mcp": "dist/index.js"
+    "counsel-mcp": "dist/index.js",
+    "counsel-mcp-setup": "dist/setup.js"
   },
   "files": [
     "dist/",
@@ -24,9 +25,16 @@
     "clean": "rimraf dist",
     "rebuild": "npm run clean && npm run build",
     "smoke": "node dist/smoke.js",
+    "setup": "node dist/setup.js",
     "prepublishOnly": "npm run rebuild"
   },
-  "keywords": ["mcp", "openai", "gemini", "llm", "claude-code"],
+  "keywords": [
+    "mcp",
+    "openai",
+    "gemini",
+    "llm",
+    "claude-code"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -37,6 +45,7 @@
   },
   "homepage": "https://github.com/russellmoss/Counsel_of_models_MCP#readme",
   "dependencies": {
+    "@clack/prompts": "^1.1.0",
     "@google/genai": "^1.46.0",
     "@modelcontextprotocol/sdk": "^1.25.2",
     "dotenv": "^17.3.1",
