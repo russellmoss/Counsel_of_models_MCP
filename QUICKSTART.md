@@ -13,7 +13,15 @@ Get up and running in 5 minutes. No prior MCP knowledge required.
 
 ---
 
-## Step 1: Clone and build
+## Step 1: Install
+
+**Option A — npm (recommended):**
+
+```bash
+npm install -g counsel-of-models-mcp
+```
+
+**Option B — clone the repo:**
 
 ```bash
 git clone https://github.com/russellmoss/Counsel_of_models_MCP.git
@@ -24,18 +32,23 @@ npm run build
 
 ## Step 2: Add your API keys
 
+**If you cloned the repo:**
+
 ```bash
 cp .env.example .env
 ```
 
-Open `.env` in any text editor. Replace the placeholder values with your real keys:
+Open `.env` in any text editor. Replace the placeholder values with your real keys.
 
-```
-OPENAI_API_KEY=sk-your-actual-key-here
-GEMINI_API_KEY=your-actual-key-here
+**If you installed via npm**, export the keys in your shell profile:
+
+```bash
+# Add to ~/.bashrc, ~/.zshrc, or ~/.profile
+export OPENAI_API_KEY="sk-your-key-here"
+export GEMINI_API_KEY="your-key-here"
 ```
 
-Save the file.
+> **Tip**: Either `GEMINI_API_KEY` or `GOOGLE_API_KEY` works — set whichever you prefer.
 
 ## Step 3: Test that it works
 
@@ -57,17 +70,25 @@ Testing Gemini...
 
 ## Step 4: Register with Claude Code
 
+**If you installed via npm:**
+
+```bash
+claude mcp add --scope user counsel-mcp -- counsel-mcp
+```
+
+**If you cloned the repo:**
+
 ```bash
 claude mcp add --scope user counsel-mcp -- node "$(pwd)/dist/index.js"
 ```
 
-Verify it registered:
+Verify:
 
 ```bash
 claude mcp list
 ```
 
-Look for `counsel-mcp` in the list with a `✓ Connected` status.
+Look for `counsel-mcp` with `✓ Connected`.
 
 ## Step 5: Try it out
 
@@ -87,6 +108,28 @@ Use ask_gemini to critique this implementation plan.
 Use ask_all to compare both answers about the pros and cons of microservices vs monoliths.
 ```
 
+## Step 6: Set up your first project workflow (optional)
+
+The tools are globally available now. To get the full cross-validation workflow in a specific project:
+
+```bash
+cd /path/to/your/project
+mkdir -p .claude/commands
+
+# Find the templates:
+# npm install: look in $(npm root -g)/counsel-of-models-mcp/examples/claude-commands/
+# Clone: look in examples/claude-commands/
+
+cp /path/to/examples/claude-commands/counsel.md .claude/commands/counsel.md
+cp /path/to/examples/claude-commands/refine.md .claude/commands/refine.md
+```
+
+Start a new Claude Code session in your project and run `/counsel`.
+
+For tailored commands, also copy `setup-counsel.md` and run `/setup-counsel`.
+
+See [README.md](README.md#using-it-in-your-projects) for the full explanation.
+
 ---
 
 ## Something not working?
@@ -94,7 +137,8 @@ Use ask_all to compare both answers about the pros and cons of microservices vs 
 | Problem | Fix |
 |---|---|
 | `claude: command not found` | Install Claude Code from [claude.ai/code](https://claude.ai/code), then restart your terminal |
-| "Missing OPENAI_API_KEY" | Run `cp .env.example .env` and add your real keys |
+| "Missing OPENAI_API_KEY" | Run `cp .env.example .env` and add your real keys (clone), or export in shell profile (npm) |
+| "Missing Gemini API key" | Either `GEMINI_API_KEY` or `GOOGLE_API_KEY` works — set one of them |
 | "429 quota exceeded" | Your API account hit its limit — check billing at [OpenAI](https://platform.openai.com/settings/organization/billing) or [Google](https://ai.google.dev/gemini-api/docs/rate-limits) |
 | "Cannot find module" | You forgot to build — run `npm run build` |
 | Claude doesn't see the tools | Start a **new** Claude Code session after registering |

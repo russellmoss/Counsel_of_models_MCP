@@ -6,11 +6,13 @@ let client: GoogleGenAI | null = null;
 
 function getClient(): GoogleGenAI {
   if (!client) {
-    const apiKey = process.env[GEMINI_CONFIG.apiKeyEnvVar];
+    const apiKey =
+      process.env[GEMINI_CONFIG.apiKeyEnvVar] ||
+      process.env["GOOGLE_API_KEY"];
     if (!apiKey) {
       throw new Error(
-        `Missing ${GEMINI_CONFIG.apiKeyEnvVar} environment variable. ` +
-          `Set it in your shell profile (~/.bashrc or ~/.zshrc) or in a .env file.`
+        `Missing Gemini API key. Set either ${GEMINI_CONFIG.apiKeyEnvVar} or GOOGLE_API_KEY ` +
+          `in your shell profile (~/.bashrc or ~/.zshrc) or in a .env file.`
       );
     }
     client = new GoogleGenAI({ apiKey });

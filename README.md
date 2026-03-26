@@ -20,9 +20,29 @@ It works by running a small local server that Claude Code talks to behind the sc
 
 ## 5-Minute Quick Start
 
-Copy and paste these commands one group at a time.
+### Option A: Install via npm (recommended)
 
-**1. Clone, install, and build:**
+```bash
+npm install -g counsel-of-models-mcp
+```
+
+Add your API keys to your shell profile:
+
+```bash
+# Add to ~/.bashrc, ~/.zshrc, or ~/.profile
+export OPENAI_API_KEY="sk-your-actual-key-here"
+export GEMINI_API_KEY="your-actual-key-here"
+```
+
+> **Tip**: Either `GEMINI_API_KEY` or `GOOGLE_API_KEY` works — set whichever you prefer.
+
+Reload your shell (`source ~/.bashrc`), then register with Claude Code:
+
+```bash
+claude mcp add --scope user counsel-mcp -- counsel-mcp
+```
+
+### Option B: Clone the repo
 
 ```bash
 git clone https://github.com/russellmoss/Counsel_of_models_MCP.git
@@ -31,52 +51,42 @@ npm install
 npm run build
 ```
 
-**2. Add your API keys:**
+Add your API keys:
 
 ```bash
 cp .env.example .env
+# Edit .env with your real keys
 ```
 
-Open the new `.env` file in any text editor and replace the placeholder values with your real keys:
-
-```
-OPENAI_API_KEY=sk-your-actual-key-here
-GEMINI_API_KEY=your-actual-key-here
-```
-
-Save the file. (This file is gitignored — your keys will never be committed.)
-
-**3. Verify both providers work:**
+Verify both providers work:
 
 ```bash
 npm run smoke
 ```
 
-You should see output like:
+You should see two green checkmarks:
 
 ```
-=== Counsel of Models — Smoke Test ===
-
 Testing OpenAI...
   ✅ OpenAI OK (model: gpt-5.4)
-  Response: "OK"
 
 Testing Gemini...
   ✅ Gemini OK (model: gemini-3.1-pro-preview)
-  Response: "OK"
 
 === Results: 2 passed, 0 failed ===
 ```
 
 If either provider fails, check [Common First-Run Problems](#common-first-run-problems) below.
 
-**4. Register with Claude Code:**
+Register with Claude Code:
 
 ```bash
 claude mcp add --scope user counsel-mcp -- node "$(pwd)/dist/index.js"
 ```
 
-**5. Start a new Claude Code session** (important — existing sessions don't pick up new servers), then try a demo prompt:
+### Verify it works
+
+Start a **new** Claude Code session (important — existing sessions don't pick up new servers), then try:
 
 ```
 Use ask_openai to summarize what this repo does in one paragraph.
@@ -99,8 +109,8 @@ That's it. You're done.
 ### `claude: command not found`
 Claude Code isn't installed or isn't on your PATH. Install it from [claude.ai/code](https://claude.ai/code). If you just installed it, restart your terminal.
 
-### Smoke test says "Missing OPENAI_API_KEY" or "Missing GEMINI_API_KEY"
-Your `.env` file is missing or the keys aren't set. Make sure you ran `cp .env.example .env` and edited it with your real keys.
+### Smoke test says "Missing OPENAI_API_KEY" or "Missing Gemini API key"
+Your API keys aren't set. If you cloned the repo, make sure you ran `cp .env.example .env` and edited it with your real keys. If you installed via npm, export the keys in your shell profile. The server accepts either `GEMINI_API_KEY` or `GOOGLE_API_KEY` — many Google tutorials use `GOOGLE_API_KEY`, and that works too.
 
 ### Smoke test says "429 quota exceeded"
 Your API account has hit its usage limit. Check your billing:
@@ -136,6 +146,108 @@ After setup, open a **new** Claude Code session and try these:
    ```
    Use ask_all to compare both answers about the pros and cons of microservices vs monoliths.
    ```
+
+---
+
+## Using It in Your Projects
+
+The tools above (`ask_openai`, `ask_gemini`, `ask_all`) are the building blocks. The real power comes from **project-specific slash commands** that orchestrate those tools into a cross-validation workflow.
+
+### The two-layer architecture
+
+```
+┌──────────────────────────────────────────────────┐
+│  Your Project (.claude/commands/)                 │
+│                                                   │
+│  /counsel  — what to review, what questions to    │
+│              ask each model, how to synthesize     │
+│                                                   │
+│  /refine   — takes feedback + your answers,       │
+│              updates the implementation plan       │
+│                                                   │
+│  These are project-specific. A dashboard app      │
+│  asks different questions than a data pipeline.    │
+├──────────────────────────────────────────────────┤
+│  Counsel MCP Server (global, registered once)     │
+│                                                   │
+│  ask_openai  — sends prompts to GPT               │
+│  ask_gemini  — sends prompts to Gemini            │
+│  ask_all     — sends to both in parallel          │
+│                                                   │
+│  Same everywhere. Doesn't know what project       │
+│  you're in.                                       │
+└──────────────────────────────────────────────────┘
+```
+
+You set up the MCP server once. The slash commands are different for every project because every project has different risks, different files to review, and different questions to ask.
+
+### Quick start: use the generic templates
+
+This package ships with ready-to-use `/counsel` and `/refine` commands that work for any project:
+
+**1. Find the templates:**
+
+```bash
+# If you installed via npm:
+npm root -g
+# Look in: <global_root>/counsel-of-models-mcp/examples/claude-commands/
+
+# If you cloned the repo, they're in:
+# examples/claude-commands/
+```
+
+**2. Copy them into your project:**
+
+```bash
+cd /path/to/your/project
+mkdir -p .claude/commands
+cp /path/to/examples/claude-commands/counsel.md .claude/commands/counsel.md
+cp /path/to/examples/claude-commands/refine.md .claude/commands/refine.md
+```
+
+**3. Start a new Claude Code session** in your project and run:
+
+```
+/counsel
+```
+
+That's it. The generic templates auto-detect your project's implementation plans and send them for cross-LLM review.
+
+### Upgrade: the interactive wizard
+
+For project-specific review prompts tailored to your risk areas, use the setup wizard:
+
+```bash
+cp /path/to/examples/claude-commands/setup-counsel.md .claude/commands/setup-counsel.md
+```
+
+Start a new Claude Code session and run `/setup-counsel`. Answer 5 questions about your project, and it generates custom `/counsel` and `/refine` commands that focus on what matters most for your codebase. Delete the wizard after — it's a one-time generator.
+
+### Example workflow
+
+```
+/new-feature      →  explore codebase, discover what needs to change
+/build-guide      →  generate a phased implementation plan
+/counsel          →  GPT + Gemini cross-validate the plan
+  ↳ you answer the design questions they surface
+/refine           →  update the plan with all feedback
+  ↳ optionally run /counsel again on the refined plan
+Execute           →  follow the refined guide phase by phase
+```
+
+### What each model is good at
+
+| Review Type | Best Provider | Why |
+|---|---|---|
+| Missing code paths / construction sites | OpenAI (GPT) | Strong at exhaustive enumeration and finding gaps |
+| Business logic / data assumptions | Gemini | Strong at challenging assumptions and reasoning about intent |
+| Pattern consistency | OpenAI (GPT) | Strong at comparing code against established conventions |
+| Data quality / edge cases | Gemini | Strong at thinking through edge cases and distributions |
+| Security / auth | OpenAI (GPT) | Strong at systematic security review |
+
+### Generated commands should be committed
+
+The `/counsel` and `/refine` commands contain no secrets — they're just instructions. **Commit them to git** so your whole team uses the same cross-validation workflow.
 
 ---
 

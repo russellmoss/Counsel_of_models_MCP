@@ -7,13 +7,24 @@
   "bin": {
     "counsel-mcp": "dist/index.js"
   },
+  "files": [
+    "dist/",
+    "examples/",
+    ".env.example",
+    "README.md",
+    "QUICKSTART.md"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
     "dev": "tsc --watch",
     "clean": "rimraf dist",
     "rebuild": "npm run clean && npm run build",
-    "smoke": "node dist/smoke.js"
+    "smoke": "node dist/smoke.js",
+    "prepublishOnly": "npm run rebuild"
   },
   "keywords": ["mcp", "openai", "gemini", "llm", "claude-code"],
   "license": "MIT",
